@@ -27,7 +27,6 @@ class ComputerBrowser:
         self.computer_id: int = computer_id
         self.browser_id: int = browser_id
 
-# Тестовые данные
 computers: list[Computer] = [
     Computer(1, 'Dell XPS 15', 'Intel i7', 16),
     Computer(2, 'HP Pavilion', 'AMD Ryzen 5', 8),
