@@ -4,23 +4,15 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import requests
 
-# ===================== КОНФИГУРАЦИЯ =====================
-# Способ 1: Через config.py (создайте файл config.py с токенами)
 try:
     from config import TELEGRAM_TOKEN, OPENWEATHER_TOKEN
-except ImportError:
-    # Способ 2: Через переменные (замените на свои токены)
-    TELEGRAM_TOKEN = "ВАШ_TELEGRAM_TOKEN_ЗДЕСЬ"
-    OPENWEATHER_TOKEN = "ВАШ_OPENWEATHER_TOKEN_ЗДЕСЬ"
 
-# ===================== НАСТРОЙКА ЛОГИРОВАНИЯ =====================
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
-# ===================== СЛОВАРЬ СМАЙЛИКОВ =====================
 code_to_smile = {
     "Clear": "Ясно ☀️",
     "Clouds": "Облачно ☁️",
@@ -39,7 +31,6 @@ code_to_smile = {
     "Tornado": "Торнадо 🌪"
 }
 
-# ===================== КОМАНДА /start =====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     welcome_text = (
@@ -55,7 +46,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update.message.reply_text(welcome_text)
 
-# ===================== КОМАНДА /help =====================
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text = (
         "📋 Как пользоваться ботом:\n\n"
@@ -72,7 +62,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update.message.reply_text(help_text)
 
-# ===================== КОМАНДА /about =====================
 async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     about_text = (
         "🌤️ Weather Bot v1.0\n\n"
@@ -83,7 +72,6 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update.message.reply_text(about_text)
 
-# ===================== КОМАНДА /weather =====================
 async def weather_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text(
@@ -96,18 +84,15 @@ async def weather_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     city = ' '.join(context.args)
     await get_weather(update, city)
 
-# ===================== ОБРАБОТКА ТЕКСТА =====================
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     city = update.message.text.strip()
     await get_weather(update, city)
 
-# ===================== ФУНКЦИЯ ПОЛУЧЕНИЯ ПОГОДЫ =====================
 async def get_weather(update: Update, city: str):
     try:
-        # Показываем статус "печатает..."
         await update.message.chat.send_action(action="typing")
         
-        # Формируем URL запроса
+        # URL запрос
         url = f"http://api.openweathermap.org/data/2.5/weather"
         params = {
             'q': city,
@@ -116,17 +101,14 @@ async def get_weather(update: Update, city: str):
             'lang': 'ru'
         }
         
-        # Отправляем запрос
         response = requests.get(url, params=params, timeout=10)
         data = response.json()
         
-        # Проверяем ответ
         if data.get('cod') != 200:
             error_msg = data.get('message', 'Неизвестная ошибка')
             await update.message.reply_text(f"❌ Ошибка: {error_msg}")
             return
         
-        # Извлекаем данные
         city_name = data['name']
         country = data['sys']['country']
         temp = data['main']['temp']
@@ -137,14 +119,11 @@ async def get_weather(update: Update, city: str):
         weather_desc = data['weather'][0]['main']
         description = data['weather'][0]['description']
         
-        # Получаем смайлик
         weather_emoji = code_to_smile.get(weather_desc, "🌈")
         
-        # Время восхода и заката
         sunrise = datetime.datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M')
         sunset = datetime.datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M')
         
-        # Формируем ответ
         weather_info = (
             f"📍 *{city_name}, {country}*\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -170,7 +149,6 @@ async def get_weather(update: Update, city: str):
         logger.error(f"Ошибка: {e}")
         await update.message.reply_text("❌ Произошла ошибка. Попробуйте позже.")
 
-# ===================== ОБРАБОТКА ОШИБОК =====================
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.error(f"Ошибка: {context.error}")
     try:
@@ -178,9 +156,7 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass
 
-# ===================== ОСНОВНАЯ ФУНКЦИЯ =====================
 def main():
-    # Проверяем токены
     if TELEGRAM_TOKEN == "ВАШ_TELEGRAM_TOKEN_ЗДЕСЬ":
         print("❌ ОШИБКА: Укажите Telegram токен!")
         print("1. Создайте файл config.py с содержанием:")
@@ -196,22 +172,17 @@ def main():
         print("❌ ОШИБКА: Укажите OpenWeather токен!")
         return
     
-    # Создаем приложение
     application = Application.builder().token(TELEGRAM_TOKEN).build()
     
-    # Добавляем обработчики команд
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("weather", weather_command))
     application.add_handler(CommandHandler("about", about_command))
     
-    # Обработчик текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     
-    # Обработчик ошибок
     application.add_error_handler(error_handler)
     
-    # Запускаем бота
     print("=" * 50)
     print("✅ Бот запускается...")
     print("📱 Проверьте бота в Telegram")
@@ -220,6 +191,5 @@ def main():
     
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
-# ===================== ЗАПУСК =====================
 if __name__ == '__main__':
     main()
