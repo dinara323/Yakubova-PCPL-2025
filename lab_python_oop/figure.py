@@ -1,15 +1,21 @@
 from abc import ABC, abstractmethod
 
+
 class Figure(ABC):
-    """Абстрактный класс Геометрическая фигура"""
-    
+
     @abstractmethod
-    def square(self):
-        """Абстрактный метод для вычисления площади"""
+    def square(self) -> float:
         pass
     
-    @property
+    @classmethod
     @abstractmethod
-    def name(self):
-        """Абстрактное свойство для названия фигуры"""
+    def get_name(cls) -> str:
+        pass
+    
+    @abstractmethod
+    def get_color(self) -> str:
+        pass
+
+    @abstractmethod
+    def __repr__(self) -> str:
         pass

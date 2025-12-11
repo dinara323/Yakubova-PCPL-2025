@@ -1,28 +1,35 @@
-import math
 from lab_python_oop.figure import Figure
 from lab_python_oop.color import FigureColor
+import math
+
 
 class Circle(Figure):
-    """Класс Круг"""
-    
+   
     FIGURE_TYPE = "Круг"
+
+    def __init__(self, color_parameter: str,  radius_parameter: float):
+        if radius_parameter <= 0:
+            raise ValueError("Радиус должен быть положительным числом")
+        self._radius = radius_parameter
+        self._figure_color = FigureColor(color_parameter)
+
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.FIGURE_TYPE
     
-    def __init__(self, radius, color):
-        self.radius = radius
-        self.color = FigureColor()
-        self.color.color = color
+    def get_color(self) -> str:
+        return self._figure_color.get_color()
     
-    def square(self):
-        return math.pi * self.radius ** 2
-    
-    @property
-    def name(self):
-        return self.FIGURE_TYPE
-    
+    def get_radius(self) -> float:
+        return self._radius
+
+    def square(self) -> float:
+        return math.pi*(self._radius**2)
+
     def __repr__(self):
-        return '{} {} цвета радиусом {} площадью {:.2f}.'.format(
-            self.name,
-            self.color.color,
-            self.radius,
+        return '{} {} цвета радиусом {} площадью {}.'.format(
+            Circle.get_name(),
+            self._figure_color.get_color(),
+            self._radius,
             self.square()
         )

@@ -1,15 +1,12 @@
 class FigureColor:
-    """Класс Цвет фигуры"""
-    
-    def __init__(self):
-        self._color = None
-    
-    @property
-    def color(self):
-        """Геттер для цвета"""
+
+    def __init__(self, color: str = None):
+        self._color = color
+
+    def get_color(self) -> str:
         return self._color
-    
-    @color.setter
-    def color(self, value):
-        """Сеттер для цвета"""
+
+    def set_color(self, value: str):
+        if not value or not isinstance(value, str):
+            raise ValueError("Поле цвета не может быть пустым")
         self._color = value
