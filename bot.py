@@ -3,9 +3,7 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 import requests
-
-try:
-    from config import TELEGRAM_TOKEN, OPENWEATHER_TOKEN
+from config import TELEGRAM_TOKEN, OPENWEATHER_TOKEN
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
