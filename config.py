@@ -1,4 +1,0 @@
-open_weather_token = "ccea3e1fe0647c4e42a8ead0f14d667d"
-
-TELEGRAM_TOKEN = "8348095903:AAGOqzNLl1AdJKNxhZ9E4F14nypIS3_cJUU"  
-OPENWEATHER_TOKEN = "ccea3e1fe0647c4e42a8ead0f14d667d" 
